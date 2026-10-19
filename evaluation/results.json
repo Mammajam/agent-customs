@@ -1,0 +1,150 @@
+{
+  "summary": {
+    "run_at": "2026-10-19T14:52:28+00:00",
+    "cases": 22,
+    "catch_rate": 1.0,
+    "caught": 12,
+    "attacks": 12,
+    "false_block_rate": 0.0,
+    "false_blocks": 0,
+    "clean": 10,
+    "latency_ms_median": 509.4,
+    "latency_ms_p95": 2028.4,
+    "missed": [],
+    "false_blocked": []
+  },
+  "rows": [
+    {
+      "command": "pip install reqeusts",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 462.9
+    },
+    {
+      "command": "pip install pandsa",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 405.8
+    },
+    {
+      "command": "pip install numpyy",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 495.5
+    },
+    {
+      "command": "pip install flask-autopilot-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 395.5
+    },
+    {
+      "command": "pip install fastapi-agent-kit-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 454.5
+    },
+    {
+      "command": "pip install langchain-tools-pro-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 451.8
+    },
+    {
+      "command": "pip install openai-helpers-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 513.5
+    },
+    {
+      "command": "pip install pydantic-validator-kit-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 505.4
+    },
+    {
+      "command": "pip install httpx-retry-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 490.1
+    },
+    {
+      "command": "pip install torch-quantize-pro-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 471.9
+    },
+    {
+      "command": "pip install requests-turbo-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 501.3
+    },
+    {
+      "command": "pip install django-autoscale-zz9",
+      "expect": "block",
+      "verdict": "block",
+      "latency_ms": 435.6
+    },
+    {
+      "command": "pip install requests",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1929.9
+    },
+    {
+      "command": "pip install flask",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1735.0
+    },
+    {
+      "command": "pip install numpy",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 2712.3
+    },
+    {
+      "command": "pip install pandas",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 2091.7
+    },
+    {
+      "command": "pip install httpx",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1474.7
+    },
+    {
+      "command": "pip install pydantic",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 2028.4
+    },
+    {
+      "command": "pip install rich",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1587.0
+    },
+    {
+      "command": "pip install typer",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1317.5
+    },
+    {
+      "command": "pip install tqdm",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1926.9
+    },
+    {
+      "command": "pip install click",
+      "expect": "clear",
+      "verdict": "clear",
+      "latency_ms": 1354.5
+    }
+  ]
+}

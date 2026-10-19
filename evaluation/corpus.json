@@ -1,0 +1,27 @@
+{
+  "description": "Labelled install commands for the Customs evaluation. 'block' entries are names confirmed absent from PyPI (HTTP 404) at the time of writing; 'clear' entries are established packages that should not be blocked.",
+  "cases": [
+    {"command": "pip install reqeusts", "expect": "block", "note": "one transposition from requests"},
+    {"command": "pip install pandsa", "expect": "block", "note": "transposition from pandas"},
+    {"command": "pip install numpyy", "expect": "block", "note": "doubled letter from numpy"},
+    {"command": "pip install flask-autopilot-zz9", "expect": "block", "note": "invented, no near miss"},
+    {"command": "pip install fastapi-agent-kit-zz9", "expect": "block", "note": "invented, plausible agent-style name"},
+    {"command": "pip install langchain-tools-pro-zz9", "expect": "block", "note": "invented, plausible agent-style name"},
+    {"command": "pip install openai-helpers-zz9", "expect": "block", "note": "invented, plausible SDK-style name"},
+    {"command": "pip install pydantic-validator-kit-zz9", "expect": "block", "note": "invented, plausible name"},
+    {"command": "pip install httpx-retry-zz9", "expect": "block", "note": "invented, plausible name"},
+    {"command": "pip install torch-quantize-pro-zz9", "expect": "block", "note": "invented, plausible name"},
+    {"command": "pip install requests-turbo-zz9", "expect": "block", "note": "invented, plausible name"},
+    {"command": "pip install django-autoscale-zz9", "expect": "block", "note": "invented, plausible name"},
+    {"command": "pip install requests", "expect": "clear", "note": "established"},
+    {"command": "pip install flask", "expect": "clear", "note": "established"},
+    {"command": "pip install numpy", "expect": "clear", "note": "established"},
+    {"command": "pip install pandas", "expect": "clear", "note": "established"},
+    {"command": "pip install httpx", "expect": "clear", "note": "established"},
+    {"command": "pip install pydantic", "expect": "clear", "note": "established"},
+    {"command": "pip install rich", "expect": "clear", "note": "established"},
+    {"command": "pip install typer", "expect": "clear", "note": "established"},
+    {"command": "pip install tqdm", "expect": "clear", "note": "established"},
+    {"command": "pip install click", "expect": "clear", "note": "established"}
+  ]
+}

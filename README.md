@@ -22,10 +22,25 @@ Try it from the terminal:
 python3 -m customs.cli check "pip install reqeusts"
 ```
 
+## Dashboard and evaluation
+
+```bash
+python3 evaluation/run_eval.py   # catch rate, false-block rate, latency -> evaluation/results.json
+python3 -m customs.web           # dashboard on http://127.0.0.1:8000 with a "try a package" box
+```
+
+The corpus in `evaluation/corpus.json` is small, and its fabricated names do not exist on PyPI. It measures the does-not-exist path, not detection of malicious packages that do exist.
+
 ## Development
 
 ```bash
 python3 -m unittest discover -s tests -v
+```
+
+Install `requests` into the project venv (system Python is externally managed):
+
+```bash
+python3 -m venv .venv && .venv/bin/python -m pip install requests
 ```
 
 ## License
