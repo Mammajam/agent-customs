@@ -14,6 +14,7 @@ import json
 import sys
 from typing import Any, TextIO
 
+from customs import allowlist
 from customs.checkpoint import check_command, overall
 from customs.verdict import Verdict
 
@@ -47,7 +48,7 @@ def handle(payload: dict, registry=None) -> dict[str, Any] | None:
     if not command:
         return None
 
-    decisions = check_command(command, registry)
+    decisions = check_command(command, registry, allow=allowlist.load())
     verdict = overall(decisions)
     if verdict is Verdict.CLEAR:
         return None

@@ -2,7 +2,7 @@
 
 Standard library only, so it runs anywhere the checkpoint runs. Served with:
 
-    python3 -m customs.web            # http://127.0.0.1:8000
+    python3 -m customs.web            # http://127.0.0.1:8000 (HOST and PORT env override)
 
 GET  /        dashboard with the latest evaluation numbers and the try box
 POST /check   run the checkpoint on the submitted command and show the verdict
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -142,7 +143,8 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main(argv: list[str] | None = None) -> int:
-    host, port = "127.0.0.1", 8000
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8000"))
     server = HTTPServer((host, port), Handler)
     print(f"Customs dashboard on http://{host}:{port}", file=sys.stderr)
     try:

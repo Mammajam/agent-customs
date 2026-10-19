@@ -106,9 +106,34 @@ class CheckpointTests(unittest.TestCase):
         reg = FakeRegistry({"flask": facts(name="flask")})
         self.assertEqual(overall(check_command("pip install flask", reg, NOW)), Verdict.CLEAR)
 
-    def test_git_clone_is_not_passed_silently(self):
-        decisions = check_command("git clone https://github.com/a/b", FakeRegistry({}), NOW)
+    def test_non_github_clone_is_not_passed_silently(self):
+        decisions = check_command("git clone https://gitlab.com/a/b", FakeRegistry({}), NOW)
         self.assertEqual(overall(decisions), Verdict.INSPECT)
+
+    def test_missing_github_repo_is_blocked(self):
+        decisions = check_command("git clone https://github.com/nobody/none-zz9", FakeRegistry({}), NOW)
+        self.assertEqual(overall(decisions), Verdict.BLOCK)
+
+    def test_archived_repo_asks(self):
+        repo = PackageFacts(Ecosystem.GIT, "github.com/a/b", exists=True,
+                            first_published=NOW - timedelta(days=900), stars=100, archived=True)
+        decisions = check_command("git clone https://github.com/a/b", FakeRegistry({"github.com/a/b": repo}), NOW)
+        self.assertEqual(overall(decisions), Verdict.INSPECT)
+
+    def test_low_star_skill_source_asks(self):
+        repo = PackageFacts(Ecosystem.GIT, "github.com/o/skill-pack", exists=True,
+                            first_published=NOW - timedelta(days=900), stars=1)
+        decisions = check_command("npx skills add https://github.com/o/skill-pack",
+                                  FakeRegistry({"github.com/o/skill-pack": repo}), NOW)
+        self.assertEqual(overall(decisions), Verdict.INSPECT)
+
+    def test_allowlist_lifts_inspect_but_not_block(self):
+        repo = PackageFacts(Ecosystem.GIT, "github.com/a/b", exists=True,
+                            first_published=NOW - timedelta(days=900), stars=1)
+        reg = FakeRegistry({"github.com/a/b": repo})
+        allow = frozenset({"github.com/a/b", "reqeusts"})
+        self.assertEqual(overall(check_command("git clone https://github.com/a/b", reg, NOW, allow)), Verdict.CLEAR)
+        self.assertEqual(overall(check_command("pip install reqeusts", reg, NOW, allow)), Verdict.BLOCK)
 
     def test_registry_failure_asks_instead_of_passing(self):
         decisions = check_command("pip install flask", BrokenRegistry(), NOW)
@@ -143,11 +168,11 @@ class HookTests(unittest.TestCase):
         self.assertIn("Did you mean `requests`", spec["permissionDecisionReason"])
 
     def test_inspect_answers_ask(self):
-        out = handle(self.payload("git clone https://github.com/a/b"), FakeRegistry({}))
+        out = handle(self.payload("git clone https://gitlab.com/a/b"), FakeRegistry({}))
         self.assertEqual(out["hookSpecificOutput"]["permissionDecision"], "ask")
 
     def test_run_reads_stdin_and_writes_json(self):
-        stdin = io.StringIO(json.dumps(self.payload("git clone https://github.com/a/b")))
+        stdin = io.StringIO(json.dumps(self.payload("git clone https://gitlab.com/a/b")))
         stdout = io.StringIO()
         import customs.hook as hook
         original = hook.check_command

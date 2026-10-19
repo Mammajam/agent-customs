@@ -22,6 +22,7 @@ from customs.typos import MAX_TYPO_DISTANCE
 NEW_PACKAGE_DAYS = 30
 YOUNG_NEAR_MISS_DAYS = 180
 LOW_WEEKLY_DOWNLOADS = 100
+LOW_STARS = 5
 
 
 class Verdict(str, Enum):
@@ -90,6 +91,11 @@ def judge(decl: Declaration, facts: PackageFacts, now: datetime | None = None) -
             decision.add(Verdict.INSPECT, "download count unknown")
         elif facts.weekly_downloads < LOW_WEEKLY_DOWNLOADS:
             decision.add(Verdict.INSPECT, f"only {facts.weekly_downloads} weekly downloads")
+
+    if facts.archived:
+        decision.add(Verdict.INSPECT, "repository is archived")
+    if facts.stars is not None and facts.stars < LOW_STARS:
+        decision.add(Verdict.INSPECT, f"only {facts.stars} stars")
 
     if decl.ecosystem is Ecosystem.NPM and facts.maintainers == 0:
         decision.add(Verdict.INSPECT, "no maintainer listed")

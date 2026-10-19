@@ -28,6 +28,7 @@ PYPI_URL = "https://pypi.org/pypi/{name}/json"
 NPM_URL = "https://registry.npmjs.org/{name}"
 NPM_DOWNLOADS_URL = "https://api.npmjs.org/downloads/point/last-week/{name}"
 OSV_URL = "https://api.osv.dev/v1/query"
+GITHUB_REPO_URL = "https://api.github.com/repos/{repo}"
 
 Fetcher = Callable[[str, dict | None], Any]
 
@@ -61,6 +62,8 @@ class PackageFacts:
     vulnerability_ids: list[str] = field(default_factory=list)
     typo_of: str | None = None
     typo_distance: int | None = None
+    stars: int | None = None
+    archived: bool = False
 
 
 def _parse_time(value: str | None) -> datetime | None:
@@ -82,6 +85,8 @@ class RegistryClient:
         elif ecosystem is Ecosystem.NPM:
             facts = self._npm(name)
             osv_ecosystem = "npm"
+        elif ecosystem is Ecosystem.GIT and name.startswith("github.com/"):
+            return self._github(name)
         else:
             raise ValueError(f"no registry for ecosystem {ecosystem.value}")
 
@@ -126,6 +131,20 @@ class RegistryClient:
             latest_version=doc.get("dist-tags", {}).get("latest"),
             maintainers=len(doc.get("maintainers", [])),
             weekly_downloads=(downloads or {}).get("downloads"),
+        )
+
+    def _github(self, name: str) -> PackageFacts:
+        repo = name[len("github.com/"):]
+        doc = self._fetch(GITHUB_REPO_URL.format(repo=urllib.parse.quote(repo)), None)
+        if doc is None:
+            return PackageFacts(Ecosystem.GIT, name, exists=False)
+        return PackageFacts(
+            Ecosystem.GIT,
+            name,
+            exists=True,
+            first_published=_parse_time(doc.get("created_at")),
+            stars=doc.get("stargazers_count"),
+            archived=bool(doc.get("archived")),
         )
 
     def _osv(self, ecosystem: str, name: str, version: str | None = None) -> list[str]:

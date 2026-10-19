@@ -102,9 +102,22 @@ class RegistryTests(unittest.TestCase):
         RegistryClient(fake).inspect(Ecosystem.NPM, "@scope/tool")
         self.assertEqual(fake.calls[0][0], "https://registry.npmjs.org/@scope%2Ftool")
 
+    def test_github_repo_facts(self):
+        repo_doc = {"created_at": "2019-01-01T00:00:00Z", "stargazers_count": 4200, "archived": False}
+        fake = FakeRegistry({"https://api.github.com/repos/psf/requests": repo_doc, "OSV": None})
+        facts = RegistryClient(fake).inspect(Ecosystem.GIT, "github.com/psf/requests")
+        self.assertTrue(facts.exists)
+        self.assertEqual(facts.stars, 4200)
+        self.assertFalse(facts.archived)
+        self.assertEqual(len(fake.calls), 1)  # no OSV lookup for repositories
+
+    def test_missing_github_repo(self):
+        facts = RegistryClient(FakeRegistry({})).inspect(Ecosystem.GIT, "github.com/nobody/none-zz9")
+        self.assertFalse(facts.exists)
+
     def test_unsupported_ecosystem_raises(self):
         with self.assertRaises(ValueError):
-            RegistryClient(FakeRegistry({})).inspect(Ecosystem.GIT, "github.com/a/b")
+            RegistryClient(FakeRegistry({})).inspect(Ecosystem.GIT, "gitlab.com/a/b")
 
 
 if __name__ == "__main__":

@@ -43,6 +43,21 @@ Install `requests` into the project venv (system Python is externally managed):
 python3 -m venv .venv && .venv/bin/python -m pip install requests
 ```
 
+## How Customs compares
+
+| Capability | Name checkers (Slopstop, SlopGuard) | Customs |
+|---|---|---|
+| Package name and registry checks | Yes | Yes |
+| Repositories and agent skills | No | Yes (GitHub; other hosts ask) |
+| Sandbox X-ray of the artifact | No | Planned (Nebius Serverless Jobs) |
+| Agent-targeted prompt-injection scan | No | Built, awaiting live Nemotron (Ultra) |
+| Resolves intent and suggests the real package | No | Yes (typo check, seed list) |
+| Patches the code and re-runs tests | No | Yes (`customs fix`) |
+
+## Status
+
+Build status and gate checklist: [docs/gate3.md](docs/gate3.md). Running feedback on the Nebius and NVIDIA tools: [FEEDBACK.md](FEEDBACK.md).
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
