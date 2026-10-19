@@ -75,7 +75,7 @@ class RegistryClient:
     def __init__(self, fetch: Fetcher = fetch_json):
         self._fetch = fetch
 
-    def inspect(self, ecosystem: Ecosystem, name: str) -> PackageFacts:
+    def inspect(self, ecosystem: Ecosystem, name: str, version: str | None = None) -> PackageFacts:
         if ecosystem is Ecosystem.PYPI:
             facts = self._pypi(name)
             osv_ecosystem = "PyPI"
@@ -86,7 +86,7 @@ class RegistryClient:
             raise ValueError(f"no registry for ecosystem {ecosystem.value}")
 
         if facts.exists:
-            facts.vulnerability_ids = self._osv(osv_ecosystem, name)
+            facts.vulnerability_ids = self._osv(osv_ecosystem, name, version)
         facts.typo_of, facts.typo_distance = closest_popular(name, ecosystem.value)
         return facts
 
@@ -101,7 +101,8 @@ class RegistryClient:
         ]
         uploads = [u for u in uploads if u]
         info = doc.get("info", {})
-        # PyPI JSON gives no maintainer list, so count distinct named contacts.
+        # PyPI JSON has no maintainer list. Named contacts are a weak proxy, and
+        # an empty field means unknown, not zero.
         contacts = {c for c in (info.get("author"), info.get("maintainer")) if c}
         return PackageFacts(
             Ecosystem.PYPI,
@@ -109,7 +110,7 @@ class RegistryClient:
             exists=True,
             first_published=min(uploads) if uploads else None,
             latest_version=info.get("version"),
-            maintainers=len(contacts),
+            maintainers=len(contacts) if contacts else None,
         )
 
     def _npm(self, name: str) -> PackageFacts:
@@ -127,6 +128,9 @@ class RegistryClient:
             weekly_downloads=(downloads or {}).get("downloads"),
         )
 
-    def _osv(self, ecosystem: str, name: str) -> list[str]:
-        doc = self._fetch(OSV_URL, {"package": {"name": name, "ecosystem": ecosystem}})
+    def _osv(self, ecosystem: str, name: str, version: str | None = None) -> list[str]:
+        query: dict[str, Any] = {"package": {"name": name, "ecosystem": ecosystem}}
+        if version:
+            query["version"] = version  # only advisories affecting this version
+        doc = self._fetch(OSV_URL, query)
         return [v["id"] for v in (doc or {}).get("vulns", []) if "id" in v]

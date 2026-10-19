@@ -12,6 +12,16 @@ Status: early build (Day 1 of the hackathon plan). The declaration parser is the
 4. **Decide**: clear, inspect or quarantine (planned).
 5. **Remediate**: suggest the real package, patch the code and re-run tests (planned).
 
+## Claude Code hook
+
+`.claude/settings.json` registers `customs hook` as a PreToolUse hook on Bash calls. A blocked install is denied with a suggested real name; an unverified one asks for approval.
+
+Try it from the terminal:
+
+```bash
+python3 -m customs.cli check "pip install reqeusts"
+```
+
 ## Development
 
 ```bash
