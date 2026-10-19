@@ -20,8 +20,8 @@ Gate 3 passes when the public demo URL works from a fresh browser and the evalua
 | Nemotron triage and injection scan | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no API key yet |
 | Tavily provenance lookup | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no Tavily key |
 | Sandbox X-ray on Serverless Jobs | **Not built** | Plan says Thursday, time-boxed to 6 hours, with a static fallback. Blocked on Serverless Jobs access |
-| MCP server exposing `customs.check` | **Not built** | Should item, after the MVP |
-| GitHub Action for CI | **Not built** | Could item |
+| MCP server exposing `customs.check` | Built, tested, driven over stdio | `customs/mcp_server.py`, `tests/test_mcp_server.py` |
+| GitHub Action for CI | Built, shell logic checked locally | `.github/workflows/customs.yml`. Fails on BLOCK, reports INSPECT |
 | Feedback log | Started | `FEEDBACK.md` |
 | Evaluation corpus breadth | Partial | 22 cases. The fabricated names are absent from PyPI, so the corpus does not test malicious packages that exist |
 

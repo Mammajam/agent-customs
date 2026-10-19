@@ -43,6 +43,31 @@ Install `requests` into the project venv (system Python is externally managed):
 python3 -m venv .venv && .venv/bin/python -m pip install requests
 ```
 
+## How we use Nebius and NVIDIA
+
+```
+agent command
+     |
+     v
+ parse (pip, npm, git, skills) ---> registries: PyPI, npm, OSV, GitHub   (built)
+     |
+     v
+ verdict: CLEAR | INSPECT | BLOCK
+     |                                        
+     +--> triage: Nemotron Nano  (Token Factory)   built, awaiting live key
+     +--> injection scan: Nemotron Ultra            built, awaiting live key
+     +--> provenance: Tavily search                 built, awaiting live key
+     +--> X-ray: install-time sandbox on Nebius Serverless Jobs   planned
+     |
+     v
+ hook (deny / ask) | fix (patch manifest, re-run tests) | dashboard (Serverless Endpoint, planned)
+```
+
+- **Token Factory** (Nebius) is the model endpoint for the LLM steps. Model IDs come from config, read from `/v1/models`.
+- **Nemotron** on Token Factory: Nano for triage, Super for intent resolution, Ultra for injection scanning.
+- **Serverless Jobs** (planned): untrusted packages are inspected in an isolated container, never on the developer's machine.
+- **Serverless Endpoint** (planned): hosts the dashboard with scale-to-zero, so the demo stays live until judging ends.
+
 ## How Customs compares
 
 | Capability | Name checkers (Slopstop, SlopGuard) | Customs |

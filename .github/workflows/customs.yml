@@ -1,0 +1,33 @@
+name: Customs
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check every dependency in the manifests
+        # Blocks (exit 1) on a name that does not exist or a near miss of a popular package.
+        # Inspect verdicts are reported but do not fail the job; they need a human decision.
+        run: |
+          set -u
+          status=0
+          for manifest in requirements.txt package.json; do
+            [ -f "$manifest" ] || continue
+            echo "::group::$manifest"
+            line=$(python3 -c "import sys; from pathlib import Path; from customs.cli import manifest_installs; print(manifest_installs(Path(sys.argv[1])))" "$manifest")
+            python3 -m customs.cli check "$line" || status=$?
+            echo "::endgroup::"
+          done
+          exit $status

@@ -60,8 +60,7 @@ def judge(decl: Declaration, facts: PackageFacts, now: datetime | None = None) -
     if not facts.exists:
         decision.add(Verdict.BLOCK, f"{decl.name} does not exist on {decl.ecosystem.value}")
         if facts.typo_of:
-            decision.suggestion = facts.typo_of
-            decision.reasons.append(f"closest real package: {facts.typo_of}")
+            decision.suggestion = facts.typo_of  # shown separately as "did you mean"
         return decision
 
     if facts.vulnerability_ids:
