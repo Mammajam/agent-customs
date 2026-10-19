@@ -73,6 +73,9 @@ REQ_RE = re.compile(
     r"^(?P<name>[A-Za-z0-9][A-Za-z0-9._-]*)\s*(?P<extras>\[[^\]]*\])?\s*(?P<spec>.*)$"
 )
 SHORTHAND_RE = re.compile(r"^[\w.-]+/[\w.-]+$")
+# A bare redirection operator such as >, >>, <, >&, 2>, 2>&. Quoted text that
+# merely contains > (like a version specifier) does not match.
+REDIRECT_RE = re.compile(r"\d*[<>][<>&|]*")
 
 
 def parse_command(command: str) -> ParseResult:
@@ -87,12 +90,22 @@ def parse_command(command: str) -> ParseResult:
 
 
 def _split_commands(command: str) -> list[list[str]]:
-    lexer = shlex.shlex(command, posix=True, punctuation_chars="&|;")
+    """Split on command separators and drop redirections such as 2>&1 or > log.txt."""
+    lexer = shlex.shlex(command, posix=True, punctuation_chars="&|;<>")
     lexer.whitespace_split = True
     commands: list[list[str]] = [[]]
+    skip_target = False
     for token in lexer:
+        if skip_target:
+            skip_target = False
+            continue
         if token in SEPARATORS:
             commands.append([])
+        elif REDIRECT_RE.fullmatch(token):
+            # A bare fd number right before the operator (the "2" in 2>&1) is not an argument.
+            if commands[-1] and commands[-1][-1].isdigit():
+                commands[-1].pop()
+            skip_target = True
         else:
             commands[-1].append(token)
     return [c for c in commands if c]

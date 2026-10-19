@@ -92,6 +92,21 @@ class SkillTests(unittest.TestCase):
         self.assertEqual(d.name, "https://github.com/owner/skill-pack")
 
 
+class RedirectionTests(unittest.TestCase):
+    def test_stderr_to_stdout_is_not_a_package(self):
+        r = parse_command("pip install requests 2>&1 | tail -5")
+        self.assertEqual([d.name for d in r.declarations], ["requests"])
+        self.assertEqual(r.unparsed, [])
+
+    def test_output_redirect_is_not_a_package(self):
+        r = parse_command("pip install flask > install.log")
+        self.assertEqual([d.name for d in r.declarations], ["flask"])
+
+    def test_devnull_redirect(self):
+        r = parse_command("npm i left-pad >/dev/null 2>&1")
+        self.assertEqual([d.name for d in r.declarations], ["left-pad"])
+
+
 class ChainTests(unittest.TestCase):
     def test_chained_commands_each_parsed(self):
         r = parse_command("pip install flask && npm i left-pad ; git clone https://github.com/a/b")
