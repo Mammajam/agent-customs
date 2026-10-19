@@ -29,7 +29,7 @@ Python (standard library only), the Nebius Token Factory API, NVIDIA Nemotron mo
 
 ## Results
 
-The checkpoint (name, registry, GitHub and advisory checks) is measured on a labelled set of 22 install commands: 12 of 12 fabricated package names were caught, and 0 of 10 established packages were falsely blocked. Median check latency is about half a second. The set is small, and the fabricated names are ones that do not exist, so it measures that path only. These results come from the checkpoint without the LLM steps. We say so in the video and the README.
+The checkpoint (name, registry, GitHub and advisory checks) is measured on a labelled set of 22 install commands: 12 of 12 fabricated package names were caught, and 0 of 10 established packages were falsely blocked. Median check latency is about 0.7 seconds, and p95 is about 3.3 seconds, which includes the static X-ray downloads. The set is small, and the fabricated names are ones that do not exist, so it measures that path only. These results come from the checkpoint without the LLM steps. We say so in the video and the README.
 
 Sources for the problem figures: CSA Research Note on HalluSquatting; Sonar, AI code verification debt; Slopstop on PyPI; SlopGuard's detection write-up.
 

@@ -10,7 +10,7 @@ Plan: record on 28 Oct, edit on 28 Oct, upload to YouTube as public. Captions on
 | 0:55–1:25 | Customs at work | "Customs sits between the agent and the shell. It blocks the hallucinated name, and suggests the real package." | Hook output in Claude Code: BLOCK, reason, "Did you mean requests?" |
 | 1:25–1:55 | The fix loop | "Then it writes the fix, and proves it with the project's tests. If the tests fail, the original file comes back." | `customs fix` run, tests pass, manifest diff on screen |
 | 1:55–2:20 | Under the hood | "The checks use public registries and GitHub. Nemotron through Token Factory handles triage, intent and the injection scan, and Tavily handles provenance." | Architecture diagram from the README. Show only the LLM steps that ran live |
-| 2:20–2:35 | Measured results | "On our labelled set: 12 of 12 fabricated names caught, no established package falsely blocked, median latency under a second." | Evaluation numbers from the dashboard, with the corpus caveat stated on screen |
+| 2:20–2:35 | Measured results | "On our labelled set: 12 of 12 fabricated names caught, no established package falsely blocked, median check latency under a second." | Evaluation numbers from the dashboard, with the corpus caveat stated on screen |
 | 2:35–2:45 | Close | "Customs. Check before the agent runs." | Repository link and dashboard URL |
 
 ## Notes for recording
