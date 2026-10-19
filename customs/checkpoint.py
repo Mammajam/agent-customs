@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
+from customs import xray
 from customs.parser import Declaration, Ecosystem, parse_command
 from customs.registry import RegistryClient
 from customs.verdict import Decision, Verdict, judge, unverified
@@ -24,7 +25,8 @@ def github_name(decl: Declaration) -> str | None:
 
 
 def check_command(command: str, registry: RegistryClient | None = None,
-                  now: datetime | None = None, allow: frozenset[str] = frozenset()) -> list[Decision]:
+                  now: datetime | None = None, allow: frozenset[str] = frozenset(),
+                  xray_enabled: bool = True, xray_fetch=None) -> list[Decision]:
     registry = registry or RegistryClient()
     result = parse_command(command)
     decisions: list[Decision] = []
@@ -44,6 +46,8 @@ def check_command(command: str, registry: RegistryClient | None = None,
             decisions.append(unverified(decl, f"registry lookup failed: {err}"))
             continue
         decision = judge(decl, facts, now)
+        if xray_enabled and facts.exists and decl.ecosystem in (Ecosystem.PYPI, Ecosystem.NPM):
+            _apply_xray(decision, facts, xray_fetch)
         if decision.verdict is Verdict.INSPECT and decl.name.lower() in allow:
             # The project has allowlisted this name. Only INSPECT is lifted; BLOCK stands.
             decision.verdict = Verdict.CLEAR
@@ -54,6 +58,18 @@ def check_command(command: str, registry: RegistryClient | None = None,
         decisions.append(unverified(_placeholder(command), f"not checked: {item}"))
 
     return decisions
+
+
+def _apply_xray(decision: Decision, facts, fetch) -> None:
+    """Static X-ray of install-time code. Findings and failures both ask; neither blocks."""
+    result = xray.scan(facts, fetch) if fetch else xray.scan(facts)
+    for finding in result.findings:
+        decision.add(Verdict.INSPECT, f"x-ray: {finding}")
+    if result.error:
+        decision.add(Verdict.INSPECT, f"x-ray could not run: {result.error}")
+    for skipped in result.skipped:
+        # Visible but not a verdict change: a large package is not a reason to ask.
+        decision.reasons.append(f"x-ray skipped: {skipped}")
 
 
 def overall(decisions: list[Decision]) -> Verdict:

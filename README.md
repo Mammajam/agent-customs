@@ -57,7 +57,8 @@ agent command
      +--> triage: Nemotron Nano  (Token Factory)   built, awaiting live key
      +--> injection scan: Nemotron Ultra            built, awaiting live key
      +--> provenance: Tavily search                 built, awaiting live key
-     +--> X-ray: install-time sandbox on Nebius Serverless Jobs   planned
+     +--> X-ray: static read of install-time code   built
+     +--> X-ray: sandboxed run on Nebius Serverless Jobs   planned
      |
      v
  hook (deny / ask) | fix (patch manifest, re-run tests) | dashboard (Serverless Endpoint, planned)
@@ -74,7 +75,7 @@ agent command
 |---|---|---|
 | Package name and registry checks | Yes | Yes |
 | Repositories and agent skills | No | Yes (GitHub; other hosts ask) |
-| Sandbox X-ray of the artifact | No | Planned (Nebius Serverless Jobs) |
+| Sandbox X-ray of the artifact | No | Static X-ray of install-time code built; sandboxed run on Nebius Serverless Jobs planned |
 | Agent-targeted prompt-injection scan | No | Built, awaiting live Nemotron (Ultra) |
 | Resolves intent and suggests the real package | No | Yes (typo check, seed list) |
 | Patches the code and re-runs tests | No | Yes (`customs fix`) |

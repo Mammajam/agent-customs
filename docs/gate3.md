@@ -19,7 +19,8 @@ Gate 3 passes when the public demo URL works from a fresh browser and the evalua
 | Public demo URL, free to test until 15 December | **Not done** | Needs deployment. The plan calls for a Nebius Serverless Endpoint, which needs Token Factory access (Gate 1 blocker) |
 | Nemotron triage and injection scan | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no API key yet |
 | Tavily provenance lookup | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no Tavily key |
-| Sandbox X-ray on Serverless Jobs | **Not built** | Plan says Thursday, time-boxed to 6 hours, with a static fallback. Blocked on Serverless Jobs access |
+| Static X-ray of install-time code (plan's fallback) | Built, tested, live-checked | `customs/xray.py`. Reads npm install scripts, PyPI sdist `setup.py` and wheel `.pth` files, never runs them. Oversized artifacts are skipped and shown as reasons |
+| Sandbox X-ray on Serverless Jobs | **Not built** | Blocked on Serverless Jobs access. The static X-ray above is the fallback |
 | MCP server exposing `customs.check` | Built, tested, driven over stdio | `customs/mcp_server.py`, `tests/test_mcp_server.py` |
 | GitHub Action for CI | Built, shell logic checked locally | `.github/workflows/customs.yml`. Fails on BLOCK, reports INSPECT |
 | Feedback log | Started | `FEEDBACK.md` |

@@ -28,6 +28,7 @@ PYPI_URL = "https://pypi.org/pypi/{name}/json"
 NPM_URL = "https://registry.npmjs.org/{name}"
 NPM_DOWNLOADS_URL = "https://api.npmjs.org/downloads/point/last-week/{name}"
 OSV_URL = "https://api.osv.dev/v1/query"
+NPM_INSTALL_HOOKS = ("preinstall", "install", "postinstall", "prepare")
 GITHUB_REPO_URL = "https://api.github.com/repos/{repo}"
 
 Fetcher = Callable[[str, dict | None], Any]
@@ -64,6 +65,10 @@ class PackageFacts:
     typo_distance: int | None = None
     stars: int | None = None
     archived: bool = False
+    # For the static X-ray: install-time code only, never the whole package.
+    install_scripts: dict[str, str] = field(default_factory=dict)  # npm lifecycle scripts
+    sdist_url: str | None = None  # PyPI source distribution, latest release
+    wheel_urls: list[str] = field(default_factory=list)  # PyPI wheels, latest release
 
 
 def _parse_time(value: str | None) -> datetime | None:
@@ -109,6 +114,9 @@ class RegistryClient:
         # PyPI JSON has no maintainer list. Named contacts are a weak proxy, and
         # an empty field means unknown, not zero.
         contacts = {c for c in (info.get("author"), info.get("maintainer")) if c}
+        files = doc.get("urls", [])  # the latest release's files
+        sdist = next((f["url"] for f in files if f.get("packagetype") == "sdist"), None)
+        wheels = [f["url"] for f in files if f.get("packagetype") == "bdist_wheel"]
         return PackageFacts(
             Ecosystem.PYPI,
             name,
@@ -116,6 +124,8 @@ class RegistryClient:
             first_published=min(uploads) if uploads else None,
             latest_version=info.get("version"),
             maintainers=len(contacts) if contacts else None,
+            sdist_url=sdist,
+            wheel_urls=wheels,
         )
 
     def _npm(self, name: str) -> PackageFacts:
@@ -123,14 +133,18 @@ class RegistryClient:
         if doc is None:
             return PackageFacts(Ecosystem.NPM, name, exists=False)
         downloads = self._fetch(NPM_DOWNLOADS_URL.format(name=urllib.parse.quote(name, safe="@")), None)
+        latest = doc.get("dist-tags", {}).get("latest")
+        scripts = doc.get("versions", {}).get(latest, {}).get("scripts", {}) if latest else {}
+        install_scripts = {k: v for k, v in scripts.items() if k in NPM_INSTALL_HOOKS}
         return PackageFacts(
             Ecosystem.NPM,
             name,
             exists=True,
             first_published=_parse_time(doc.get("time", {}).get("created")),
-            latest_version=doc.get("dist-tags", {}).get("latest"),
+            latest_version=latest,
             maintainers=len(doc.get("maintainers", [])),
             weekly_downloads=(downloads or {}).get("downloads"),
+            install_scripts=install_scripts,
         )
 
     def _github(self, name: str) -> PackageFacts:
