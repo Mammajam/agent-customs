@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; }
+  body {
+    background: #0f1724;
+    background-image:
+      radial-gradient(circle at 78% 42%, rgba(245, 180, 40, 0.16), transparent 46%),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: auto, 40px 40px, 40px 40px;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: #f4f1ea;
+    position: relative;
+  }
+  .left { position: absolute; left: 70px; top: 0; width: 540px; height: 720px; display: flex; flex-direction: column; justify-content: center; }
+  .kicker { font-size: 20px; letter-spacing: 4px; text-transform: uppercase; color: #f5b428; font-weight: 700; }
+  h1 { font-size: 130px; line-height: 0.9; font-weight: 900; letter-spacing: -3px; margin: 18px 0 26px; }
+  .tag { font-size: 32px; line-height: 1.25; color: #e3e0d6; font-weight: 500; }
+  .tag b { color: #ffffff; }
+  .chips { margin-top: 36px; display: flex; gap: 12px; }
+  .chip { font-family: Menlo, monospace; font-size: 20px; padding: 8px 16px; border-radius: 8px; background: #1d2a40; color: #9fc3ff; border: 1px solid #2c3d5c; }
+
+  .right { position: absolute; left: 650px; top: 90px; width: 560px; }
+
+  .term { background: #0a0f18; border: 1px solid #2a3850; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.45); overflow: hidden; }
+  .bar { height: 40px; background: #1a2336; display: flex; align-items: center; gap: 9px; padding: 0 16px; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; }
+  .term-body { padding: 26px 28px 30px; font-family: Menlo, Consolas, monospace; font-size: 26px; line-height: 1.5; }
+  .prompt { color: #6ee7a1; }
+  .cmd { color: #ffffff; }
+  .bad { color: #ff6b6b; text-decoration: underline wavy #ff6b6b; text-underline-offset: 6px; }
+  .muted { color: #7a8aa6; font-size: 22px; }
+  .ok { color: #6ee7a1; }
+
+  .verdict { margin-top: 26px; display: flex; align-items: center; gap: 20px; }
+  .stamp {
+    font-size: 64px; font-weight: 900; letter-spacing: 6px; color: #ff4d4d;
+    border: 7px solid #ff4d4d; border-radius: 12px; padding: 4px 22px;
+    transform: rotate(-6deg); text-shadow: 0 0 18px rgba(255,77,77,0.35);
+    background: rgba(255,77,77,0.06);
+  }
+  .fix { font-family: -apple-system, Arial, sans-serif; font-size: 24px; color: #e3e0d6; line-height: 1.4; }
+  .fix span { background: #163a2a; color: #6ee7a1; padding: 2px 10px; border-radius: 6px; font-family: Menlo, monospace; font-weight: 700; }
+
+  .gate { position: absolute; left: 650px; top: 470px; width: 560px; height: 150px; }
+  .caption { position: absolute; left: 650px; bottom: 38px; width: 560px; font-size: 22px; color: #9aa7bd; text-align: center; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+  <div class="left">
+    <div class="kicker">Hackathon project</div>
+    <h1>Customs</h1>
+    <div class="tag">Your AI agent just made up a package.<br><b>Customs stops it before it runs.</b></div>
+    <div class="chips">
+      <span class="chip">pip</span><span class="chip">npm</span><span class="chip">git clone</span><span class="chip">skills</span>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="term">
+      <div class="bar">
+        <span class="dot" style="background:#ff5f57"></span>
+        <span class="dot" style="background:#febc2e"></span>
+        <span class="dot" style="background:#28c840"></span>
+      </div>
+      <div class="term-body">
+        <div><span class="prompt">~/app $</span> <span class="cmd">pip install</span> <span class="bad">reqeusts</span></div>
+        <div class="muted" style="margin-top:14px">Customs: name not found on PyPI</div>
+        <div class="verdict">
+          <div class="stamp">BLOCK</div>
+          <div class="fix">Did you mean<br><span>requests</span> ?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <svg class="gate" viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+    <!-- road -->
+    <rect x="0" y="108" width="560" height="10" rx="5" fill="#2a3850"/>
+    <!-- checkpoint barrier -->
+    <rect x="250" y="40" width="10" height="78" fill="#8a94a8"/>
+    <g>
+      <rect x="250" y="56" width="26" height="14" fill="#f5b428"/>
+      <rect x="250" y="74" width="26" height="14" fill="#f5b428" opacity="0.2"/>
+    </g>
+    <!-- gate arm, red and white -->
+    <rect x="260" y="54" width="250" height="14" rx="4" fill="#ff4d4d"/>
+    <rect x="300" y="54" width="22" height="14" fill="#f4f1ea"/>
+    <rect x="360" y="54" width="22" height="14" fill="#f4f1ea"/>
+    <rect x="420" y="54" width="22" height="14" fill="#f4f1ea"/>
+    <rect x="480" y="54" width="22" height="14" fill="#f4f1ea"/>
+    <!-- package box, the rejected one -->
+    <g transform="translate(60,60)">
+      <rect x="0" y="22" width="92" height="66" fill="#c08a4b" stroke="#8c5f2c" stroke-width="3"/>
+      <path d="M0 40 L92 40" stroke="#8c5f2c" stroke-width="3"/>
+      <rect x="32" y="22" width="28" height="18" fill="#e7c48f"/>
+      <text x="46" y="78" font-family="Menlo, monospace" font-size="15" font-weight="700" text-anchor="middle" fill="#3b2a14">?</text>
+    </g>
+    <!-- sign -->
+    <text x="280" y="34" font-family="Menlo, monospace" font-size="16" fill="#9aa7bd" text-anchor="middle">CHECKPOINT</text>
+  </svg>
+
+  <div class="caption">Checks every install, clone and skill fetch from a coding agent</div>
+
+</body>
+</html>
