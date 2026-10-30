@@ -23,9 +23,9 @@ Python (standard library only), the Nebius Token Factory API, NVIDIA Nemotron mo
 
 ## How we use Nebius and NVIDIA
 
-- **Token Factory** is the model endpoint for the LLM steps. Nemotron Nano is for triage of suspicious installs, Nemotron Super for resolving the intended package, and Nemotron Ultra for scanning READMEs and install scripts for prompt injection. The code for all three is built. Live calls are the next step, and this paragraph will be updated with the measured results once they run.
+- **Token Factory** is the model endpoint for the LLM steps. Nemotron Nano is for triage of suspicious installs, Nemotron Super for resolving the intended package, and Nemotron Ultra for scanning READMEs and install scripts for prompt injection. The client, prompts and checkpoint wiring for these calls are built and tested against a fake transport. They have not run live: Liberia, the author's country, is not in the Token Factory billing form's country list, so no API key could be created. We make no live-result claim for Nebius or NVIDIA. With a key, one command (`scripts/gate1_check.py`) makes the first live call.
 - **Serverless Jobs** is planned for the sandboxed install (X-ray), so untrusted packages never run on the developer's machine.
-- **The dashboard** is planned to run on a Serverless Endpoint with scale-to-zero, so judges can try a package.
+- **The dashboard** is built as a container for a Serverless Endpoint with scale-to-zero. It is hosted on Vercel in the meantime, for the same reason.
 
 ## Results
 

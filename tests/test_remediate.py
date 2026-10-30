@@ -117,3 +117,14 @@ class ManifestInstallTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class QuotingTests(unittest.TestCase):
+    def test_specifier_with_comparison_is_quoted_not_a_redirect(self):
+        from customs.cli import manifest_installs
+        d = Path(tempfile.mkdtemp())
+        f = d / "requirements.txt"
+        f.write_text("reqeusts>=2.31\n")
+        decisions = check_command(manifest_installs(f), REGISTRY, NOW)
+        self.assertEqual([x.declaration.name for x in decisions], ["reqeusts"])
+        self.assertEqual(decisions[0].declaration.specifier, ">=2.31")

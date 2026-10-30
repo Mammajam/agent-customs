@@ -1,15 +1,15 @@
 # Submission checklist: Official Rules requirements
 
-Status is as of 19 October. "Done" means built and checked in this repo. "Planned" means not yet done. "At risk" means a blocker is open. The 16 requirements are those in the project plan's compliance matrix.
+Status is as of 30 October. "Done" means built and checked in this repo. "Planned" means not yet done. "At risk" means a blocker is open. The 16 requirements are those in the project plan's compliance matrix.
 
 | # | Requirement | How Customs meets it | Status |
 |---|---|---|---|
-| 1 | Runtime call to the Token Factory inference API, or runs on Nebius AI Cloud | `customs/llm.py` and `customs/llm_checks.py` call Token Factory. The dashboard is ready for a Nebius Serverless Endpoint | Planned: live calls wait on the API key (Gate 1) |
-| 2 | Uses at least one NVIDIA open-source model | Nemotron Nano (triage), Super (intent resolution), Ultra (injection scan), read from config | Planned: model IDs confirmed from `/v1/models` once the key exists |
+| 1 | Runtime call to the Token Factory inference API, or runs on Nebius AI Cloud | `customs/llm.py` and `customs/llm_checks.py` call Token Factory. The dashboard is ready for a Nebius Serverless Endpoint | **Not met live.** Built and wired into the checkpoint (`customs/checkpoint.py`), tested with a fake transport. No key: Liberia is not in the Token Factory billing country list (see `FEEDBACK.md`). Message to organisers drafted in `docs/organiser-email.md` |
+| 2 | Uses at least one NVIDIA open-source model | Nemotron Nano (triage), Super (intent resolution), Ultra (injection scan), read from config | **Not met live.** Prompts and wiring built; model IDs unconfirmed for the same reason |
 | 3 | Genuine attempt at the track goal (Stage One pass/fail) | `customs fix` writes the patch and runs the tests, rolling back on failure. The checkpoint runs inside Claude Code as a PreToolUse hook | Done for the checkpoint and fix loop. Judged at Stage One on the video and write-up |
-| 4 | Working demo URL, free to test until judging ends (15 Dec) | `customs/web.py` dashboard and `Dockerfile` with a try-a-package box | At risk: no public host yet |
+| 4 | Working demo URL, free to test until judging ends (15 Dec) | `customs/web.py` dashboard and `Dockerfile` with a try-a-package box | Done on Vercel (https://customs-dashboard-rho.vercel.app), not on a Nebius Serverless Endpoint (no Nebius account access) |
 | 5 | Public GitHub repo, OSI license visible in the About section | github.com/Mammajam/agent-customs, MIT license committed | Done for the license. Confirm the About panel shows MIT |
-| 6 | README with setup steps, plus how Nemotron, Token Factory and Nebius services are used | `README.md`, with the "How we use Nebius and NVIDIA" section and architecture | Done in draft. Update once the live calls run |
+| 6 | README with setup steps, plus how Nemotron, Token Factory and Nebius services are used | `README.md`, with the "How we use Nebius and NVIDIA" section and architecture | Done. States plainly that the Nebius and NVIDIA calls have not run live, and why |
 | 7 | Video under 3 minutes, public on YouTube, project shown working | Script in `docs/video-script.md` | Planned: recording and YouTube upload are yours |
 | 8 | Text description of features and functionality | `docs/devpost.md` draft | Planned: draft ready, to be reviewed before submitting |
 | 9 | Track named on the submission | Coding & Agentic Engineering | Planned: enter on the Devpost form |
@@ -18,7 +18,7 @@ Status is as of 19 October. "Done" means built and checked in this repo. "Planne
 | 12 | Authorised use of third-party APIs | PyPI, npm, OSV, GitHub and Tavily public APIs. Backoff on failure: a failed lookup asks, never passes | Done for the public APIs. Tavily live use is planned |
 | 13 | Open-source components extended, licences respected | MIT and Apache dependencies only. Detection logic written from scratch, not a fork of SlopGuard | Done. Confirm before submitting |
 | 14 | Materials in English | All materials in English | Done |
-| 15 | Entrant eligibility | Individual entrant. Liberia is not on the excluded list | Done (confirmed in the plan) |
+| 15 | Entrant eligibility | Individual entrant. Liberia is not on the excluded list | Done for the hackathon rules (confirmed in the plan). Nebius's own billing country list is narrower: see row 1 |
 | 16 | Best Use of Tavily bonus: a functional runtime call | Tavily provenance lookup on every suspicious name, in `customs/llm_checks.py` | Planned: needs a Tavily key |
 
 ## Open items before submitting

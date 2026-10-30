@@ -11,3 +11,8 @@ Running log, kept from day 1 of the build. Each entry says what happened, what i
 
 - **Docs do not list NVIDIA Nemotron model IDs.** The Token Factory documentation pages I could read name the base URL (`https://api.tokenfactory.nebius.com/v1/`) and bearer auth, but do not list Nemotron Nano, Super or Ultra model IDs. Impact: the code reads model IDs from environment config and expects them from `/v1/models`, so this is a workaround, not a blocker. Would help: a model table with exact IDs and tier names.
 - **Token Factory access is confirmed by email, but no API key yet.** The "Welcome to Nebius Token Factory" email arrived on 19 October. Impact: Gate 1 still needs a key from the dashboard. Would help: a note in that email on how to create the first key and what it is billed against.
+
+## 2026-10-30
+
+- **Country not supported, so no key and no live run.** Liberia is not in the Billing details country list, and I could not create a Token Factory API key. Impact: the Nebius client, the Nemotron triage and injection-scan steps, and their wiring into the checkpoint are built and tested only against a fake transport, and an organiser email today flagged the submission as possibly not built with Nebius and NVIDIA. This was the cause of the Gate 1 block on 17 and 19 October. Would help: a documented route for unsupported countries (a hackathon-issued key or credits), and a notice about country limits before sign-up, not at the billing step.
+- **Eligibility rules and billing availability differ.** The hackathon rules did not exclude my country, but the platform's billing form does not support it. A line in the rules linking to the supported-country list would have shown this on day 1.

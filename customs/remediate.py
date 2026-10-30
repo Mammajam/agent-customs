@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -49,8 +50,8 @@ def _install_line(d: Decision, name: str) -> str:
     """Re-check the replacement with the same version the manifest pins, not just the name."""
     spec = d.declaration.specifier
     if d.declaration.ecosystem.value == "npm":
-        return f"npm install {name}" + (f"@{spec}" if spec else "")
-    return f"pip install {name}{spec}"
+        return f"npm install {shlex.quote(name + ('@' + spec if spec else ''))}"
+    return f"pip install {shlex.quote(name + spec)}"
 
 
 def patch_requirements(text: str, replacements: dict[str, str]) -> str:

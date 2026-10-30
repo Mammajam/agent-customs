@@ -5,7 +5,8 @@ from __future__ import annotations
 import re
 from datetime import datetime
 
-from customs import xray
+from customs import llm_checks, xray
+from customs.llm import Settings, TokenFactory, TokenFactoryError
 from customs.parser import Declaration, Ecosystem, parse_command
 from customs.registry import RegistryClient
 from customs.verdict import Decision, Verdict, judge, unverified
@@ -24,10 +25,24 @@ def github_name(decl: Declaration) -> str | None:
     return None
 
 
+_FROM_ENV = object()
+
+
+def llm_from_env() -> TokenFactory | None:
+    """A Token Factory client when NEBIUS_API_KEY is set, otherwise None (LLM steps off)."""
+    try:
+        return TokenFactory(Settings.from_env())
+    except TokenFactoryError:
+        return None
+
+
 def check_command(command: str, registry: RegistryClient | None = None,
                   now: datetime | None = None, allow: frozenset[str] = frozenset(),
-                  xray_enabled: bool = True, xray_fetch=None) -> list[Decision]:
+                  xray_enabled: bool = True, xray_fetch=None,
+                  llm: TokenFactory | None | object = _FROM_ENV) -> list[Decision]:
     registry = registry or RegistryClient()
+    if llm is _FROM_ENV:
+        llm = llm_from_env()
     result = parse_command(command)
     decisions: list[Decision] = []
 
@@ -48,6 +63,8 @@ def check_command(command: str, registry: RegistryClient | None = None,
         decision = judge(decl, facts, now)
         if xray_enabled and facts.exists and decl.ecosystem in (Ecosystem.PYPI, Ecosystem.NPM):
             _apply_xray(decision, facts, xray_fetch)
+        if llm is not None:
+            _apply_llm(decision, facts, llm)
         if decision.verdict is Verdict.INSPECT and decl.name.lower() in allow:
             # The project has allowlisted this name. Only INSPECT is lifted; BLOCK stands.
             decision.verdict = Verdict.CLEAR
@@ -70,6 +87,22 @@ def _apply_xray(decision: Decision, facts, fetch) -> None:
     for skipped in result.skipped:
         # Visible but not a verdict change: a large package is not a reason to ask.
         decision.reasons.append(f"x-ray skipped: {skipped}")
+
+
+def _apply_llm(decision: Decision, facts, client: TokenFactory) -> None:
+    """Nemotron second opinion. It can raise a verdict to INSPECT, never lower one.
+
+    BLOCK stays with the deterministic rules. A failed or unreadable model call
+    is noted and changes nothing, so the LLM steps cannot turn a stop into a pass.
+    """
+    if decision.verdict is not Verdict.CLEAR:
+        triage = llm_checks.triage(client, decision.declaration.name, "; ".join(decision.reasons))
+        decision.reasons.append(f"nemotron triage: {triage.verdict.value}: {triage.reason}")
+    if facts.install_scripts:
+        text = "\n".join(f"{hook}: {body}" for hook, body in facts.install_scripts.items())
+        scan = llm_checks.injection_scan(client, text)
+        if scan.suspicious:
+            decision.add(Verdict.INSPECT, f"nemotron injection scan: {scan.reason}")
 
 
 def overall(decisions: list[Decision]) -> Verdict:

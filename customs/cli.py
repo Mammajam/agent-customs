@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import sys
 from pathlib import Path
 
@@ -40,10 +41,10 @@ def manifest_installs(path: Path) -> str:
     if path.name == "package.json":
         doc = json.loads(path.read_text())
         names = [*doc.get("dependencies", {}), *doc.get("devDependencies", {})]
-        return " && ".join(f"npm install {n}" for n in names) or "true"
+        return " && ".join(f"npm install {shlex.quote(n)}" for n in names) or "true"
     lines = [line.strip() for line in path.read_text().splitlines()]
     reqs = [line for line in lines if line and not line.startswith("#")]
-    return " && ".join(f"pip install {r}" for r in reqs) or "true"
+    return " && ".join(f"pip install {shlex.quote(r)}" for r in reqs) or "true"
 
 
 def _fix(args) -> int:

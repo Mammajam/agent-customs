@@ -16,8 +16,8 @@ Gate 3 passes when the public demo URL works from a fresh browser and the evalua
 | Evaluation harness: catch rate, false-block rate, latency | Built, run | `evaluation/run_eval.py`, `evaluation/results.json`. 12/12 caught, 0/10 false blocks |
 | Dashboard with try-a-package box | Built, tested, served locally | `customs/web.py`. POST `/check` returns a verdict |
 | Dockerfile for the dashboard | Written, not built | `Dockerfile`. Docker not run in this environment |
-| Public demo URL, free to test until 15 December | **Not done** | Needs deployment. The plan calls for a Nebius Serverless Endpoint, which needs Token Factory access (Gate 1 blocker) |
-| Nemotron triage and injection scan | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no API key yet |
+| Public demo URL, free to test until 15 December | Live on Vercel: https://customs-dashboard-rho.vercel.app. Not on the Nebius Serverless Endpoint the plan named (blocked on access). Vercel is the stand-in host |
+| Nemotron triage and injection scan | Built, tested with fake transport | `customs/llm_checks.py`, wired into `customs/checkpoint.py` when `NEBIUS_API_KEY` is set. **Not run live**: no API key, because Liberia is not in the Token Factory billing country list |
 | Tavily provenance lookup | Built, tested with fake transport | `customs/llm_checks.py`. **Not run live**: no Tavily key |
 | Static X-ray of install-time code (plan's fallback) | Built, tested, live-checked | `customs/xray.py`. Reads npm install scripts, PyPI sdist `setup.py` and wheel `.pth` files, never runs them. Oversized artifacts are skipped and shown as reasons |
 | Sandbox X-ray on Serverless Jobs | **Not built** | Blocked on Serverless Jobs access. The static X-ray above is the fallback |
@@ -28,7 +28,7 @@ Gate 3 passes when the public demo URL works from a fresh browser and the evalua
 
 ## Blockers before the freeze
 
-1. Token Factory API key (Gate 1). Needed for live triage, injection scan and the Nemotron model IDs.
+1. Token Factory API key (Gate 1). Needed for live triage, injection scan and the Nemotron model IDs. Blocked by country eligibility (Liberia), not by code.
 2. Tavily API key, for provenance.
 3. A host for the public URL. The plan names Nebius Serverless Endpoint. The Dockerfile is ready for any container host.
 
